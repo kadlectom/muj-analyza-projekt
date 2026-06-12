@@ -1,0 +1,1 @@
+ALTER TABLE `activity_catalog` DROP COLUMN `max_points_per_day`;

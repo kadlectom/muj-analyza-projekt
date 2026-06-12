@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sportovní výzvy – HTML layout</title>
+</head>
+<body>
+<!-- NOTE: This is a UX/UI layout wireframe generated from PRD -->
+<h1>Sportovní výzvy – HTML layout</h1>
+<p>Tento soubor slouží jako statický HTML layout (wireframe) pro prototyp aplikace sportovních výzev.</p>
+
+<nav>
+  <ul>
+    <li>Přehled výzvy</li>
+    <li>Zapsat aktivitu</li>
+    <li>Žebříček</li>
+    <li>Archiv</li>
+    <li>Profil</li>
+    <li>Admin</li>
+  </ul>
+</nav>
+
+<section>
+  <h2>Aktuální výzva</h2>
+  <p>Start: DD.MM.YYYY | Konec: DD.MM.YYYY | Zbývá: XX dní</p>
+  <button>Přihlásit se do výzvy</button>
+  <button>Zobrazit pouze výsledky</button>
+</section>
+
+<section>
+  <h2>Zápis aktivity</h2>
+  <label>Datum</label><br/>
+  <input type="date" /><br/><br/>
+
+  <label>Aktivita</label><br/>
+  <select>
+    <option>Běh</option>
+    <option>Kolo</option>
+    <option>Wellness</option>
+  </select><br/><br/>
+
+  <label>Hodnota</label><br/>
+  <input type="number" /><br/><br/>
+
+  <h3>Vysvětlivka bodování</h3>
+  <p>Běh: 5 km × 2,5 = 12,5 bodu</p>
+
+  <button>Uložit aktivitu</button>
+</section>
+
+<section>
+  <h2>Žebříček</h2>
+  <ol>
+    <li>Uživatel A – 120 bodů</li>
+    <li>Uživatel B – 95 bodů</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Archiv výzev</h2>
+  <ul>
+    <li>Zimní výzva 2025 (read‑only)</li>
+    <li>Letní výzva 2024 (read‑only)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Admin panel</h2>
+  <p>Správa výzev, aktivit a administrátorské zásahy (auditovatelné).</p>
+</section>
+
+</body>
+</html>

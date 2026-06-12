@@ -1,0 +1,11 @@
+{
+  "framework": "nextjs",
+  "crons": [
+    { "path": "/api/cron/daily-bonus-announce", "schedule": "0 7 * * *" },
+    { "path": "/api/cron/daily-bonus-announce", "schedule": "0 8 * * *" },
+    { "path": "/api/cron/onboarding-nudge",     "schedule": "0 8 * * *" },
+    { "path": "/api/cron/onboarding-nudge",     "schedule": "0 9 * * *" },
+    { "path": "/api/cron/weekly-summary",       "schedule": "0 12 * * 5" },
+    { "path": "/api/cron/weekly-summary",       "schedule": "0 13 * * 5" }
+  ]
+}

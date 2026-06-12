@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sportovně-kulturní výzvu</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-frame">
+      <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="logo-mark">SC</div>
+          <div>
+          <p class="eyebrow">Interaktivní prototyp</p>
+          <h1>Sportovně-kulturní výzvu</h1>
+          <p class="topbar-subtitle">Přehled výzev, osobní dashboard a živé pořadí v jednom rozhraní.</p>
+          </div>
+        </div>
+        <div id="sessionPanel" class="session-panel"></div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel-main">
+          <div id="authView"></div>
+          <div id="appView" class="hidden">
+            <div id="viewTabs" class="view-tabs"></div>
+            <section id="decisionPage" class="hidden"></section>
+            <section id="overviewPage">
+              <section id="challengeDetail" class="detail-view"></section>
+
+              <section class="overview">
+                <div class="section-heading">
+                  <div>
+                    <p class="eyebrow">Krok 2</p>
+                    <h2>Další přehled</h2>
+                  </div>
+                </div>
+                <div id="challengeList" class="challenge-grid"></div>
+              </section>
+            </section>
+
+            <section id="personalPage" class="hidden"></section>
+            <section id="adminPage" class="hidden"></section>
+          </div>
+        </section>
+
+        <aside class="panel panel-side">
+          <section>
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Krok 3</p>
+                <h2>Leaderboard</h2>
+              </div>
+            </div>
+            <div id="leaderboard"></div>
+          </section>
+
+          <section class="sidebar-section sidebar-section-compact">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Aktivity</p>
+                <h2>Poslední zápisy</h2>
+              </div>
+            </div>
+            <div id="recentActivities"></div>
+          </section>
+
+          <section class="sidebar-section sidebar-section-compact">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Transparentnost</p>
+                <h2>Auditní stopa</h2>
+              </div>
+            </div>
+            <div id="auditLog"></div>
+          </section>
+        </aside>
+      </main>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

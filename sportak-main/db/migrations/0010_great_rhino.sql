@@ -1,0 +1,1 @@
+ALTER TABLE `activity_catalog` ADD `min_value` real;

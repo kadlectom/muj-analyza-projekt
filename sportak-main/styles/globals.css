@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ── Lundegaard brand tokens ── */
+    --blue:         #006dff;
+    --blue-hover:   #0057cc;
+    --blue-light:   #e6f0ff;
+    --blue-mid:     #cce0ff;
+    --dark:         #272727;
+    --gray-dark:    #3a3a3a;
+    --gray-mid:     #939393;
+    --gray-light:   #f4f5f7;
+    --gray-border:  #e2e4e9;
+    --white:        #ffffff;
+    --green:        #18C872;
+    --gradient:      linear-gradient(135deg, #18C872 0%, #006DFF 100%);
+    --orange:       #ff7a00;
+    --red:          #e03131;
+
+    /* ── Radii ── */
+    --radius-sm:    6px;
+    --radius-md:    12px;
+    --radius-lg:    20px;
+    --radius-xl:    32px;
+
+    /* ── Shadows ── */
+    --shadow-sm:    0 1px 4px rgba(0,0,0,.07);
+    --shadow-md:    0 4px 16px rgba(0,0,0,.10);
+    --shadow-lg:    0 8px 32px rgba(0,0,0,.13);
+
+    /* ── Fonts ── */
+    --font:         'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-display: 'Barlow Condensed', system-ui, sans-serif;
+
+    /* ── Type scale (app UI — fixed rem) ── */
+    --text-2xs:  0.6875rem;   /* 11px — uppercase labels, badges, table headers */
+    --text-xs:   0.75rem;     /* 12px — timestamps, secondary captions */
+    --text-sm:   0.8125rem;   /* 13px — secondary body, hints */
+    --text-base: 0.875rem;    /* 14px — primary body, form content */
+    --text-md:   1rem;        /* 16px — card headings, emphasized body */
+    --text-lg:   1.125rem;    /* 18px — section headings */
+    --text-xl:   1.375rem;    /* 22px — sub-hero headings */
+    --text-2xl:  2.125rem;    /* 34px — hero challenge names */
+    --text-hero: 2.75rem;     /* 44px — rank numbers, celebration scores */
+
+    /* ── Leading ── */
+    --leading-display: 1.05;  /* hero titles */
+    --leading-heading: 1.2;   /* section headings */
+    --leading-body:    1.55;  /* comfortable reading */
+
+    /* ── Tracking ── */
+    --tracking-label: 0.06em; /* uppercase labels — standardised */
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    background: #e8ecf0;
+    color: var(--dark);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Tabular nums for any score/km/rank data so digits don't shift width */
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Tight leading on large display text */
+  h1, h2 {
+    line-height: var(--leading-heading);
+  }
+}
+
+/* ── Animations ── */
+
+/* Hero content fade-up entrance */
+@keyframes hero-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Confetti particle — success state */
+@keyframes confetti-fall {
+  0%   { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+  80%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(100px) rotate(var(--r, 400deg)) scale(0.6); }
+}
+
+/* Leaderboard / feed row entrance — staggered reveal */
+@keyframes row-enter {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Podium card entrance — top-3 cards rise into place with 3→2→1 stagger */
+@keyframes podium-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Pulsing status dot — "live" indicator on the active-challenge hero */
+@keyframes ping-s {
+  75%, 100% { transform: scale(1.8); opacity: 0; }
+}
+.ping-dot { position: relative; }
+.ping-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #18C872;
+  animation: ping-s 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

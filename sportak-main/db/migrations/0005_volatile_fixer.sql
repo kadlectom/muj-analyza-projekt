@@ -1,0 +1,1 @@
+ALTER TABLE `bonus_rules` RENAME COLUMN "catalog_item_id" TO "catalog_item_ids";

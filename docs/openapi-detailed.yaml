@@ -1,0 +1,451 @@
+openapi: 3.0.3
+info:
+  title: Firemní sportovní výzvy API
+  version: 1.0.0
+  description: Podrobný OpenAPI contract pro MVP aplikaci Firemní sportovní výzvy.
+servers:
+  - url: http://localhost:3001
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [system]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  service:
+                    type: string
+
+  /auth/me:
+    get:
+      summary: Aktuální přihlášený uživatel
+      tags: [auth]
+      responses:
+        '200':
+          description: Uživatel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /challenges:
+    get:
+      summary: Seznam všech výzev
+      tags: [challenges]
+      responses:
+        '200':
+          description: Výzvy
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChallengeSummary'
+
+  /challenges/active:
+    get:
+      summary: Seznam aktivních výzev
+      tags: [challenges]
+      responses:
+        '200':
+          description: Aktivní výzvy
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChallengeSummary'
+
+  /challenges/archive:
+    get:
+      summary: Seznam archivních výzev
+      tags: [challenges]
+      responses:
+        '200':
+          description: Archivní výzvy
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChallengeSummary'
+
+  /challenges/{id}:
+    get:
+      summary: Detail výzvy
+      tags: [challenges]
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      responses:
+        '200':
+          description: Detail výzvy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeDetail'
+        '404':
+          description: Nenalezena
+
+  /activity-types:
+    get:
+      summary: Seznam typů aktivit
+      tags: [activity-types]
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [winter, summer]
+      responses:
+        '200':
+          description: Typy aktivit
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityType'
+
+  /challenges/{id}/entries:
+    get:
+      summary: Seznam aktivit pro výzvu
+      tags: [entries]
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      responses:
+        '200':
+          description: Záznamy aktivit
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityEntry'
+    post:
+      summary: Vytvoření zápisu aktivity
+      tags: [entries]
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityEntryRequest'
+      responses:
+        '201':
+          description: Vytvořený záznam
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityEntry'
+        '400':
+          description: Neplatný požadavek
+
+  /entries/{id}:
+    patch:
+      summary: Úprava zápisu aktivity
+      tags: [entries]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActivityEntryRequest'
+      responses:
+        '200':
+          description: Upravený záznam
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityEntry'
+    delete:
+      summary: Smazání zápisu aktivity
+      tags: [entries]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Smazáno
+
+  /challenges/{id}/leaderboard:
+    get:
+      summary: Leaderboard výzvy
+      tags: [leaderboard]
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+
+  /admin/challenges:
+    post:
+      summary: Vytvoření výzvy administrátorem
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChallengeRequest'
+      responses:
+        '201':
+          description: Vytvořeno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeDetail'
+
+  /admin/activity-types:
+    post:
+      summary: Vytvoření typu aktivity administrátorem
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityTypeRequest'
+      responses:
+        '201':
+          description: Vytvořeno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityType'
+
+  /admin/audit:
+    get:
+      summary: Audit log
+      tags: [admin]
+      responses:
+        '200':
+          description: Audit log
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+
+components:
+  parameters:
+    ChallengeId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        slackId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [participant, admin]
+        avatarUrl:
+          type: string
+
+    ChallengeSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [winter, summer]
+        status:
+          type: string
+          enum: [draft, active, closed, archived]
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        participantCount:
+          type: integer
+        isReadOnly:
+          type: boolean
+
+    ChallengeDetail:
+      allOf:
+        - $ref: '#/components/schemas/ChallengeSummary'
+        - type: object
+          properties:
+            description:
+              type: string
+            rules:
+              type: array
+              items:
+                type: string
+
+    ActivityType:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        allowedFor:
+          type: array
+          items:
+            type: string
+        index:
+          type: number
+        description:
+          type: string
+
+    ActivityEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        challengeId:
+          type: string
+        userId:
+          type: string
+        activityTypeId:
+          type: string
+        activityTypeName:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        points:
+          type: number
+        explanation:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+
+    CreateActivityEntryRequest:
+      type: object
+      required: [activityTypeId, value]
+      properties:
+        activityTypeId:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+
+    UpdateActivityEntryRequest:
+      type: object
+      properties:
+        value:
+          type: number
+        unit:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+        userId:
+          type: string
+        userName:
+          type: string
+        avatarUrl:
+          type: string
+        totalPoints:
+          type: number
+
+    CreateChallengeRequest:
+      type: object
+      required: [name, type, startDate, endDate]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [winter, summer]
+        status:
+          type: string
+          enum: [draft, active, closed, archived]
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        description:
+          type: string
+
+    CreateActivityTypeRequest:
+      type: object
+      required: [name, category, allowedFor, index]
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        allowedFor:
+          type: array
+          items:
+            type: string
+        index:
+          type: number
+        description:
+          type: string
+
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        action:
+          type: string
+        performedBy:
+          type: string
+        performedAt:
+          type: string
+          format: date-time

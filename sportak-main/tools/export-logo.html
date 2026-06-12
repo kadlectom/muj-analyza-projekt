@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <title>Export logo – Jerryho Výzvy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      background: #e8ecf0;
+      color: #272727;
+      margin: 0;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+    p.muted { color: #939393; font-size: 13px; margin: 0; }
+    .preview {
+      width: 256px;
+      height: 256px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.13);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      font: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, #18C872 0%, #006DFF 100%);
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: transform .15s, opacity .15s;
+    }
+    button:hover { transform: translateY(-1px); opacity: .94; }
+    button.ghost {
+      background: #fff;
+      color: #272727;
+      border: 1px solid #e2e4e9;
+    }
+    label.toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #3a3a3a;
+      background: #fff;
+      border: 1px solid #e2e4e9;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Logo „Jerryho Výzvy"</h1>
+  <p class="muted">Náhled je 256 px. Tlačítka stáhnou PNG v dané velikosti.</p>
+
+  <canvas id="preview" class="preview" width="512" height="512"></canvas>
+
+  <label class="toggle">
+    <input type="checkbox" id="rounded" checked />
+    Zaoblené rohy (rádius ≈ 22 % strany)
+  </label>
+
+  <div class="row">
+    <button data-size="512">Stáhnout 512×512</button>
+    <button data-size="1024">Stáhnout 1024×1024</button>
+    <button data-size="2048">Stáhnout 2048×2048</button>
+  </div>
+
+  <p class="muted">Tip: pro app-icon stores nech zaoblení vypnuté — OS si ho zaoblí sám.</p>
+
+  <hr style="width: 320px; border: 0; border-top: 1px solid #e2e4e9; margin: 8px 0;">
+  <h2 style="margin: 0; font-size: 16px; font-weight: 800;">Sada pro PWA</h2>
+  <p class="muted" style="max-width: 420px; text-align: center;">
+    Vygeneruje 3 PNG s názvy přesně podle <code>manifest.webmanifest</code>.
+    Stažené soubory ulož do složky <code>public/</code>.
+  </p>
+  <div class="row">
+    <button id="pwa-bundle">Stáhnout sadu pro PWA (3 soubory)</button>
+  </div>
+  <p class="muted" style="font-size: 12px;">
+    Obsahuje: <code>icon-192.png</code>, <code>icon-512.png</code> (oba zaoblené Androidem) a
+    <code>apple-touch-icon.png</code> (180×180, bez zaoblení — iOS zaoblí sám).
+  </p>
+
+  <hr style="width: 320px; border: 0; border-top: 1px solid #e2e4e9; margin: 8px 0;">
+  <h2 style="margin: 0; font-size: 16px; font-weight: 800;">Open Graph image</h2>
+  <p class="muted" style="max-width: 460px; text-align: center;">
+    Náhled pro link unfurly (Slack, LinkedIn, Teams, iMessage) ve formátu 1200 × 630 px.
+    Stažený soubor ulož jako <code>public/og-image.png</code>.
+  </p>
+
+  <canvas
+    id="og-preview"
+    width="1200"
+    height="630"
+    style="width: 600px; height: 315px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,.13);"
+  ></canvas>
+
+  <div class="row">
+    <button id="og-download">Stáhnout og-image.png</button>
+  </div>
+  <p class="muted" style="font-size: 12px; max-width: 460px; text-align: center;">
+    Obsahuje brand gradient, diagonální pruhy, trofej 🏆, titul „JERRYHO VÝZVY" v Barlow Condensed
+    a podtitul „Každý pohyb se počítá" v Plus Jakarta Sans.
+  </p>
+
+  <script>
+    const GRAD_FROM = "#18C872";
+    const GRAD_TO   = "#006DFF";
+    const EMOJI     = "🏆";
+
+    function draw(size, rounded) {
+      const c = document.createElement("canvas");
+      c.width = size;
+      c.height = size;
+      const ctx = c.getContext("2d");
+
+      if (rounded) {
+        const r = size * 0.22;
+        ctx.beginPath();
+        ctx.moveTo(r, 0);
+        ctx.lineTo(size - r, 0);
+        ctx.arcTo(size, 0, size, r, r);
+        ctx.lineTo(size, size - r);
+        ctx.arcTo(size, size, size - r, size, r);
+        ctx.lineTo(r, size);
+        ctx.arcTo(0, size, 0, size - r, r);
+        ctx.lineTo(0, r);
+        ctx.arcTo(0, 0, r, 0, r);
+        ctx.closePath();
+        ctx.clip();
+      }
+
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, GRAD_FROM);
+      grad.addColorStop(1, GRAD_TO);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+
+      ctx.font = `${Math.floor(size * 0.62)}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(EMOJI, size / 2, size / 2 + size * 0.04);
+
+      return c;
+    }
+
+    function refreshPreview() {
+      const rounded = document.getElementById("rounded").checked;
+      const target = document.getElementById("preview");
+      const tCtx = target.getContext("2d");
+      tCtx.clearRect(0, 0, 512, 512);
+      const c = draw(512, rounded);
+      tCtx.drawImage(c, 0, 0);
+    }
+
+    function downloadCanvas(c, filename) {
+      return new Promise((resolve) => {
+        c.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          resolve();
+        }, "image/png");
+      });
+    }
+
+    function download(size) {
+      const rounded = document.getElementById("rounded").checked;
+      const c = draw(size, rounded);
+      const name = `jerryho-vyzvy-logo-${size}${rounded ? "" : "-square"}.png`;
+      downloadCanvas(c, name);
+    }
+
+    async function downloadPwaBundle() {
+      // Android maskable / chrome — zaoblené
+      await downloadCanvas(draw(192, true), "icon-192.png");
+      await new Promise((r) => setTimeout(r, 200));
+      await downloadCanvas(draw(512, true), "icon-512.png");
+      await new Promise((r) => setTimeout(r, 200));
+      // iOS Apple touch icon — bez zaoblení, iOS aplikuje vlastní masku
+      await downloadCanvas(draw(180, false), "apple-touch-icon.png");
+    }
+
+    // ─── Open Graph image ──────────────────────────────────────────────────────
+    // 1200×630 banner with brand gradient, diagonal stripes, trophy, title and subtitle.
+    // Layout deliberately keeps content within a 1080×540 safe zone since some
+    // unfurl clients (iMessage, older Slack) crop a few percent off each edge.
+    const OG_W = 1200;
+    const OG_H = 630;
+    const OG_TITLE = "JERRYHO VÝZVY";
+    const OG_SUBTITLE = "Každý pohyb se počítá";
+
+    async function drawOgImage() {
+      // Make sure the brand fonts are actually loaded before measuring/drawing.
+      // document.fonts.ready resolves once on initial CSS load; explicitly waiting
+      // for these specific font specs is cheap and bullet-proof.
+      try {
+        await Promise.all([
+          document.fonts.load("800 96px \"Barlow Condensed\""),
+          document.fonts.load("600 32px \"Plus Jakarta Sans\""),
+        ]);
+      } catch {
+        // If fonts fail (offline, etc.), fallbacks below still produce a usable image.
+      }
+
+      const c = document.createElement("canvas");
+      c.width = OG_W;
+      c.height = OG_H;
+      const ctx = c.getContext("2d");
+
+      // 1. Brand gradient (135°, green → blue)
+      const grad = ctx.createLinearGradient(0, 0, OG_W, OG_H);
+      grad.addColorStop(0, GRAD_FROM);
+      grad.addColorStop(1, GRAD_TO);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, OG_W, OG_H);
+
+      // 2. Diagonal stripe overlay — same texture as the in-app hero
+      //    (repeating-linear-gradient(-45deg, white@~5% 0 1px, transparent 0 32px))
+      ctx.save();
+      ctx.globalAlpha = 0.07;
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 1;
+      for (let off = -OG_H; off <= OG_W; off += 32) {
+        ctx.beginPath();
+        ctx.moveTo(off, 0);
+        ctx.lineTo(off + OG_H, OG_H);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // 3. Soft white radial glow behind the trophy — adds depth, hints at a "spotlight"
+      const glowX = OG_W / 2;
+      const glowY = 215;
+      const glow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, 220);
+      glow.addColorStop(0, "rgba(255,255,255,0.18)");
+      glow.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, OG_W, OG_H);
+
+      // 4. Trophy emoji
+      ctx.font = "150px \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Noto Color Emoji\", \"Twemoji Mozilla\", sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(EMOJI, OG_W / 2, glowY);
+
+      // 5. Title "JERRYHO VÝZVY" — Barlow Condensed, big, white
+      ctx.font = "800 96px \"Barlow Condensed\", \"Arial Narrow\", \"Arial\", sans-serif";
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "-1px";
+      ctx.fillText(OG_TITLE, OG_W / 2, 380);
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+
+      // 6. Thin divider — small accent under the title
+      ctx.strokeStyle = "rgba(255,255,255,0.32)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(OG_W / 2 - 60, 440);
+      ctx.lineTo(OG_W / 2 + 60, 440);
+      ctx.stroke();
+
+      // 7. Subtitle
+      ctx.font = "600 32px \"Plus Jakarta Sans\", system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
+      ctx.fillText(OG_SUBTITLE, OG_W / 2, 485);
+
+      return c;
+    }
+
+    async function refreshOgPreview() {
+      const target = document.getElementById("og-preview");
+      const tCtx = target.getContext("2d");
+      const og = await drawOgImage();
+      tCtx.clearRect(0, 0, OG_W, OG_H);
+      tCtx.drawImage(og, 0, 0);
+    }
+
+    async function downloadOgImage() {
+      const c = await drawOgImage();
+      await downloadCanvas(c, "og-image.png");
+    }
+
+    // ─── Wire-up ───────────────────────────────────────────────────────────────
+    document.getElementById("rounded").addEventListener("change", refreshPreview);
+    document.querySelectorAll("button[data-size]").forEach((btn) => {
+      btn.addEventListener("click", () => download(parseInt(btn.dataset.size, 10)));
+    });
+    document.getElementById("pwa-bundle").addEventListener("click", downloadPwaBundle);
+    document.getElementById("og-download").addEventListener("click", downloadOgImage);
+
+    // Wait a tick so emoji + brand fonts load
+    function refreshAll() {
+      refreshPreview();
+      refreshOgPreview();
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(refreshAll);
+    } else {
+      refreshAll();
+    }
+  </script>
+</body>
+</html>

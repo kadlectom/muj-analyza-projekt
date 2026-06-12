@@ -1,0 +1,192 @@
+openapi: 3.0.0
+info:
+  title: Firemní sportovní výzvy API
+  version: 1.0.0
+  description: MVP API contract pro aplikaci Firemní sportovní výzvy.
+servers:
+  - url: http://localhost:3001
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  service:
+                    type: string
+  /challenges:
+    get:
+      summary: Seznam výzev
+      responses:
+        '200':
+          description: Seznam výzev
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Challenge'
+  /challenges/{id}:
+    get:
+      summary: Detail výzvy
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detail výzvy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeDetail'
+  /challenges/{id}/entries:
+    get:
+      summary: Záznamy aktivit pro výzvu
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Seznam aktivit
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityEntry'
+    post:
+      summary: Vytvoření záznamu aktivity
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityEntryRequest'
+      responses:
+        '201':
+          description: Vytvořený záznam
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityEntry'
+  /challenges/{id}/leaderboard:
+    get:
+      summary: Leaderboard výzvy
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+components:
+  schemas:
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        participantCount:
+          type: integer
+        isReadOnly:
+          type: boolean
+    ChallengeDetail:
+      allOf:
+        - $ref: '#/components/schemas/Challenge'
+        - type: object
+          properties:
+            description:
+              type: string
+            rules:
+              type: array
+              items:
+                type: string
+    ActivityEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        challengeId:
+          type: string
+        userId:
+          type: string
+        activityTypeId:
+          type: string
+        activityTypeName:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        points:
+          type: number
+        explanation:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+    CreateActivityEntryRequest:
+      type: object
+      required:
+        - activityTypeId
+        - value
+      properties:
+        activityTypeId:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+        userId:
+          type: string
+        userName:
+          type: string
+        avatarUrl:
+          type: string
+        totalPoints:
+          type: number
